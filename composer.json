@@ -1,0 +1,29 @@
+{
+  "name": "jackie/keer",
+  "description": "A simple and powerful php web framework for development basing on api!",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jackie Tao",
+      "email": "jackie8tao@gmail.com"
+    }
+  ],
+  "minimum-stability": "alpha",
+  "require": {
+    "php":"^7.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit":"7.4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Keer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Keer\\Tests\\": "tests/"
+    }
+  }
+}
