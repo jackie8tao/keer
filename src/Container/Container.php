@@ -10,9 +10,9 @@
 
 namespace Keer\Container;
 
-use Keer\Container\Exception\ContainerException;
-use \ReflectionException;
 use \ReflectionClass;
+use \ReflectionException;
+use Keer\Container\Exception\ContainerException;
 use Keer\Container\Exception\DependencyNotFoundException;
 use Keer\Container\Exception\DependencyExistsException;
 use Keer\Container\Exception\InvalidDependencyException;

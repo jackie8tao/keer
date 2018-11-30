@@ -10,12 +10,12 @@
 
 namespace Keer\Tests\Container;
 
+use PHPUnit\Framework\TestCase;
 use Keer\Container\Container as KContainer;
 use Keer\Container\Exception\ContainerException;
 use Keer\Container\Exception\DependencyExistsException;
 use Keer\Container\Exception\InvalidDependencyException;
 use Keer\Container\Exception\DependencyNotFoundException;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class ContainerTest, 容器测试
