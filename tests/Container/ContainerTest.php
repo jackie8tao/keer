@@ -11,6 +11,10 @@
 namespace Keer\Tests\Container;
 
 use Keer\Container\Container as KContainer;
+use Keer\Container\Exception\ContainerException;
+use Keer\Container\Exception\DependencyExistsException;
+use Keer\Container\Exception\InvalidDependencyException;
+use Keer\Container\Exception\DependencyNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,37 +29,78 @@ class ContainerTest extends TestCase
     public function testRegister()
     {
         $container = new KContainer();
+        try {
+            // 别名，类名，参数
+            $container->register("foo2", Foo::class, [
+                'nu' => 12,
+                'name' => 'ClassFoo'
+            ]);
 
-        $this->assertTrue($container->register("foo2", Foo::class, [
-            'nu' => 12,
-            'name' => 'ClassFoo'
-        ]), '名称为别名，依赖为类名称并带有参数');
-        $this->assertTrue($container->register(Foo::class, null, [
-            'nu' => 13, 'name' => 'ClassFoo'
-        ]), '名称和依赖都为类名且带有参数');
+            // 别名，参数
+            $container->register(Foo::class, null, [
+                'nu' => 13, 'name' => 'ClassFoo'
+            ]);
 
-        $this->assertFalse($container->register("object", new \stdClass()), '依赖不能是具体对象');
-        $this->assertTrue($container->register('foo1', function ($id, $name) {
-            return new Foo($id, $name);
-        }, ['nu' => 11, 'name' => 'ClassFoo']), '名称为别名，依赖为闭包');
+            // 别名，闭包，参数
+            $container->register('foo1', function ($id, $name) {
+                return new Foo($id, $name);
+            }, ['nu' => 11, 'name' => 'ClassFoo']);
 
-        $this->assertTrue($container->register('foobar', FooBar::class, [
-            'name' => 'ClassFooBar',
-            'bar' => [
-                'name' => 'ClassBar',
-                'foo' => [
-                    'nu' => 14,
-                    'name' => 'ClassFoo'
+            // 别名，类名，参数，递归
+            $container->register('foobar', FooBar::class, [
+                'name' => 'ClassFooBar',
+                'bar' => [
+                    'name' => 'ClassBar',
+                    'foo' => [
+                        'nu' => 14,
+                        'name' => 'ClassFoo'
+                    ]
                 ]
-            ]
-        ]), '依赖参数为嵌套类型');
+            ]);
+        } catch (ContainerException $e) {
+            $this->assertFalse(false);
+        }
+        $this->assertTrue(true);
+
         return $container;
+    }
+
+    /**
+     * 测试容器注册函数返回的InvalidDependency异常
+     * @depends testRegister
+     * @param KContainer $container
+     * @throws InvalidDependencyException
+     * @throws DependencyExistsException
+     */
+    public function testInvalidDependencyException(KContainer $container)
+    {
+        $this->expectException(InvalidDependencyException::class);
+        $foo = new Foo(15, 'ClassFoo');
+        $container->register("foo3", $foo);
+    }
+
+    /**
+     * 测试容器的DependencyExists异常
+     * @param KContainer $container
+     * @throws DependencyExistsException
+     * @throws InvalidDependencyException
+     * @depends testRegister
+     */
+    public function testDependencyExistsException(KContainer $container)
+    {
+        $this->expectException(DependencyExistsException::class);
+        $container->register(Foo::class, null, [
+            'nu'=> 16,
+            'name' => 'ClassFoo'
+        ]);
     }
 
     /**
      * 测试take方法是否成功
      * @depends testRegister
      * @param KContainer $container
+     * @throws ContainerException
+     * @throws DependencyNotFoundException
      */
     public function testTake(KContainer $container)
     {
@@ -74,5 +119,37 @@ class ContainerTest extends TestCase
         /** @var FooBar $foo4 */
         $foobar = $container->take('foobar');
         $this->assertEquals('ClassFooBar', $foobar->name(), '深层次嵌套');
+    }
+
+    /**
+     * 测试容器的DependencyNotExists异常
+     * @depends testRegister
+     * @param KContainer $container
+     * @throws ContainerException
+     * @throws DependencyNotFoundException
+     */
+    public function testDependencyNotFoundException(KContainer $container)
+    {
+        $this->expectException(DependencyNotFoundException::class);
+        $container->take('foox');
+    }
+
+    /**
+     * 测试容器的Container异常
+     * @depends testRegister
+     * @param KContainer $container
+     * @throws ContainerException
+     * @throws DependencyNotFoundException
+     */
+    public function testContainerException(KContainer $container)
+    {
+        $this->expectException(ContainerException::class);
+        try{
+            $container->register('bar', Bar::class);
+        }catch (ContainerException $e) {
+            $this->assertFalse(false);
+        }
+
+        $container->take('bar');
     }
 }

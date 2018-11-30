@@ -7,3 +7,14 @@
  *
  * Date: 18-11-30, Time: 上午1:54
  */
+
+namespace Keer\Container\Exception;
+
+/**
+ * Class DependencyNotFoundException
+ * @package Keer\Container\Exception
+ */
+class DependencyNotFoundException extends ContainerException
+{
+    // 依赖未在容器中发现
+}

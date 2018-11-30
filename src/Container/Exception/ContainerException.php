@@ -10,6 +10,10 @@
 
 namespace Keer\Container\Exception;
 
+/**
+ * Class ContainerException
+ * @package Keer\Container\Exception
+ */
 class ContainerException extends \Exception
 {
     // 容器发生异常

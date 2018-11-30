@@ -7,3 +7,14 @@
  *
  * Date: 18-11-30, Time: 上午1:53
  */
+
+namespace Keer\Container\Exception;
+
+/**
+ * Class DependencyExistsException
+ * @package Keer\Container\Exception
+ */
+class DependencyExistsException extends ContainerException
+{
+    // 依赖已经存在，不可重复注册
+}

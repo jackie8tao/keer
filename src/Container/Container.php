@@ -10,8 +10,12 @@
 
 namespace Keer\Container;
 
+use Keer\Container\Exception\ContainerException;
 use \ReflectionException;
 use \ReflectionClass;
+use Keer\Container\Exception\DependencyNotFoundException;
+use Keer\Container\Exception\DependencyExistsException;
+use Keer\Container\Exception\InvalidDependencyException;
 
 /**
  * Class Container，基础容器对象
@@ -27,37 +31,38 @@ class Container implements IContainer
 
     /**
      * 向容器中注册对象
-     * @param string $name , 对象名称
+     * @param string $alias , 对象名称
      * @param null $class , 依赖值，默认为空
      * @param array|null $parameters , 依赖所需要的参数
-     * @return bool
+     * @throws DependencyExistsException
+     * @throws InvalidDependencyException
      */
-    public function register(string $name, $class = null, array $parameters = null)
+    public function register(string $alias, $class = null, array $parameters = null)
     {
-        if (isset($this->dependencies[$name]))
-            return false;
+        if (isset($this->dependencies[$alias]))
+            throw new DependencyExistsException();
 
-        $def = isset($class) ? $class : $name;
+        $def = isset($class) ? $class : $alias;
         if (!is_string($def) && !is_callable($def))
-            return false;
+            throw new InvalidDependencyException('依赖只能为类名或者闭包');
 
-        $this->dependencies[$name] = [
+        $this->dependencies[$alias] = [
             "def" => $def,
             "args" => $parameters
         ];
-
-        return true;
     }
 
     /**
      * 从容器中解析出指定对象
      * @param string $name , 对象名称
      * @return mixed
+     * @throws DependencyNotFoundException
+     * @throws ContainerException
      */
     public function take(string $name)
     {
         if (!isset($this->dependencies[$name]))
-            return false;
+            throw new DependencyNotFoundException();
 
         $def = $this->dependencies[$name]['def'];
         $args = $this->dependencies[$name]['args'];
@@ -65,7 +70,7 @@ class Container implements IContainer
             try{
                 return $this->parseClass($def, $args);
             } catch (ReflectionException $e) {
-                return false;
+                throw new ContainerException();
             }
         }
 
@@ -73,7 +78,7 @@ class Container implements IContainer
             return call_user_func_array($def, $args);
         }
 
-        return false;
+        throw new ContainerException();
     }
 
     /**

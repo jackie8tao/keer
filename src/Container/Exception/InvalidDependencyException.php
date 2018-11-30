@@ -7,3 +7,14 @@
  *
  * Date: 18-11-30, Time: 上午1:53
  */
+
+namespace Keer\Container\Exception;
+
+/**
+ * Class InvalidDependencyException
+ * @package Keer\Container\Exception
+ */
+class InvalidDependencyException extends ContainerException
+{
+    // 无效的依赖
+}
