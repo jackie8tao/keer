@@ -10,10 +10,10 @@
 
 namespace Keer\Container;
 
-use Keer\Container\Exception\InvalidServiceException;
-use Keer\Container\Exception\ServiceExistException;
 use \ReflectionClass;
 use \ReflectionException;
+use Keer\Container\Exception\InvalidServiceException;
+use Keer\Container\Exception\ServiceExistException;
 use Keer\Container\Exception\ContainerException;
 use Keer\Container\Exception\DependencyNotFoundException;
 use Keer\Container\Exception\DependencyExistsException;
@@ -80,7 +80,7 @@ class Container implements IContainer
             return call_user_func_array($def, $args);
         }
 
-        throw new ContainerException();
+        throw new ContainerException("未找到{$name}");
     }
 
     /**
@@ -99,22 +99,23 @@ class Container implements IContainer
             throw new InvalidServiceException('服务类不存在!');
         }
 
-        /** @var IServiceProvider $serviceObj */
-        $serviceObj = new $service($this);
-        if (!($serviceObj instanceof IServiceProvider)) {
+        /** @var IServiceProvider $serviceProvider */
+        $serviceProvider = new $service($this);
+        if (!($serviceProvider instanceof IServiceProvider)) {
             throw new InvalidServiceException('服务类必须实现IServiceProvider接口');
         }
 
         $this->services[$service] = [
-            'aliases' => $serviceObj->provides(),
-            'object' => $serviceObj
+            'aliases' => $serviceProvider->aliases(),
+            'object' => $serviceProvider->provides()
         ];
     }
 
     /**
      * 从容器中获取服务组件
-     * @param string $alias, 服务名称
+     * @param string $alias , 服务名称
      * @return mixed
+     * @throws ContainerException
      */
     public function fetch(string $alias)
     {
@@ -124,6 +125,8 @@ class Container implements IContainer
                 return $this->services[$key]['object'];
             }
         }
+
+        throw new ContainerException("未找到服务组件:{$alias}");
     }
 
     /**

@@ -19,7 +19,7 @@ use Keer\Container\IServiceProvider;
  */
 abstract class GenericService implements IServiceProvider
 {
-    /** @var IContainer 服务存储的容器 */
+    /** @var mixed 服务存储的容器 */
     protected $container;
 
     /** @var array 服务名称 */
@@ -28,5 +28,17 @@ abstract class GenericService implements IServiceProvider
     public function __construct(IContainer $container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * 服务组件的别称
+     * @return array
+     */
+    public function aliases(): array
+    {
+        if (empty($this->aliases)) {
+            $this->aliases = [self::class];
+        }
+        return $this->aliases;
     }
 }

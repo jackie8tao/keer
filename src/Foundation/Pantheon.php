@@ -11,7 +11,9 @@
 namespace Keer\Foundation;
 
 use Keer\Container\Container;
+use Keer\Container\Exception\ContainerException;
 use Keer\Foundation\Exception\FoundationException;
+use Keer\Foundation\Services\LogService;
 
 /**
  * 万物自此开始，由此而终结！
@@ -36,8 +38,9 @@ class Pantheon extends Container
         if (!$path) {
             throw new FoundationException('无效的应用程序根目录');
         }
-
         $this->rootpath = $path;
+
+        $this->bootstrap();
     }
 
     /**
@@ -56,11 +59,36 @@ class Pantheon extends Container
     }
 
     /**
+     * 应用自启动部分，主要完成服务组件的启动。
+     */
+    protected function bootstrap()
+    {
+        foreach ($this->initialServices() as $service) {
+            try {
+                $this->set($service);
+            } catch (ContainerException $e) {
+            }
+        }
+
+    }
+
+    /**
      * 获取程序根目录路径
      * @return string 应用程序的根目录
      */
-    public function rootpath() : string
+    public function rootpath(): string
     {
         return $this->rootpath;
+    }
+
+    /**
+     * 需要初始化的服务组件列表
+     * @return array
+     */
+    protected function initialServices(): array
+    {
+        return [
+            LogService::class
+        ];
     }
 }

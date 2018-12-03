@@ -18,14 +18,14 @@ namespace Keer\Container;
 interface IServiceProvider
 {
     /**
-     * 服务的名称
+     * 服务组件的别称
      * @return array
      */
-    public function provides() : array;
+    public function aliases() : array;
 
     /**
-     * 运行服务
+     * 服务组件对象
      * @return mixed
      */
-    public function execute();
+    public function provides();
 }
