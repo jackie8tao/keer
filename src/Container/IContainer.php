@@ -23,4 +23,18 @@ interface IContainer
      * @return mixed
      */
     public function take(string $name);
+
+    /**
+     * 向容器中注册服务组件
+     * @param string $service, 服务类名
+     * @return mixed
+     */
+    public function set(string $service);
+
+    /**
+     * 从容器中获取服务组件
+     * @param string $alias, 服务名称
+     * @return mixed
+     */
+    public function fetch(string $alias);
 }

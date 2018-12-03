@@ -10,6 +10,8 @@
 
 namespace Keer\Container;
 
+use Keer\Container\Exception\InvalidServiceException;
+use Keer\Container\Exception\ServiceExistException;
 use \ReflectionClass;
 use \ReflectionException;
 use Keer\Container\Exception\ContainerException;
@@ -23,11 +25,11 @@ use Keer\Container\Exception\InvalidDependencyException;
  */
 class Container implements IContainer
 {
-    /**
-     * [name1=>obj1, name2=>obj2}
-     * @var array ， 向容器中注册的对象
-     */
+    /** @var array 向容器中注册的对象 */
     protected $dependencies = [];
+
+    /** @var array 容器中注册的服务组件 */
+    protected $services = [];
 
     /**
      * 向容器中注册对象
@@ -67,7 +69,7 @@ class Container implements IContainer
         $def = $this->dependencies[$name]['def'];
         $args = $this->dependencies[$name]['args'];
         if (is_string($def)) {
-            try{
+            try {
                 return $this->parseClass($def, $args);
             } catch (ReflectionException $e) {
                 throw new ContainerException();
@@ -79,6 +81,49 @@ class Container implements IContainer
         }
 
         throw new ContainerException();
+    }
+
+    /**
+     * 向容器中添加服务组件
+     * @param string $service
+     * @throws ServiceExistException
+     * @throws InvalidServiceException
+     */
+    public function set(string $service)
+    {
+        if (isset($this->services[$service])) {
+            throw new ServiceExistException('服务已经添加！');
+        }
+
+        if (!class_exists($service)) {
+            throw new InvalidServiceException('服务类不存在!');
+        }
+
+        /** @var IServiceProvider $serviceObj */
+        $serviceObj = new $service($this);
+        if (!($serviceObj instanceof IServiceProvider)) {
+            throw new InvalidServiceException('服务类必须实现IServiceProvider接口');
+        }
+
+        $this->services[$service] = [
+            'aliases' => $serviceObj->provides(),
+            'object' => $serviceObj
+        ];
+    }
+
+    /**
+     * 从容器中获取服务组件
+     * @param string $alias, 服务名称
+     * @return mixed
+     */
+    public function fetch(string $alias)
+    {
+        foreach ($this->services as $key => $value) {
+            $found = array_search($alias, $value['aliases']) || $key == $alias;
+            if ($found) {
+                return $this->services[$key]['object'];
+            }
+        }
     }
 
     /**
