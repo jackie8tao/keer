@@ -1,11 +1,11 @@
 {
-  "name": "jackie/keer",
+  "name": "jackie8tao/keer",
   "description": "A simple and powerful php web framework for development basing on api!",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "keer1013",
+      "name": "Jackie Tao",
       "email": "jackie8tao@gmail.com"
     }
   ],
