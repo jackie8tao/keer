@@ -1,4 +1,12 @@
 <?php
+/**
+ * (c) Jackie Tao <jackie8tao@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ *
+ * Date: 18-12-3, Time: 下午4:31
+ */
 
 namespace Keer\Container;
 
@@ -13,7 +21,7 @@ interface IContainer
      * 向容器中注册对象
      * @param string $alias , 对象名称
      * @param null $class , 依赖值，默认为空
-     * @param array $parameters, 依赖所需要的参数
+     * @param array $parameters , 依赖所需要的参数
      */
     public function register(string $alias, $class = null, array $parameters = null);
 
@@ -23,18 +31,4 @@ interface IContainer
      * @return mixed
      */
     public function take(string $name);
-
-    /**
-     * 向容器中注册服务组件
-     * @param string $service, 服务类名
-     * @return mixed
-     */
-    public function set(string $service);
-
-    /**
-     * 从容器中获取服务组件
-     * @param string $alias, 服务名称
-     * @return mixed
-     */
-    public function fetch(string $alias);
 }

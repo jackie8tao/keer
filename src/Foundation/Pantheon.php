@@ -5,14 +5,13 @@
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  *
- * Date: 18-11-29, Time: 下午5:39
+ * Date: 18-11-29, Time: 下午 5:39
  */
 
 namespace Keer\Foundation;
 
 use Keer\Container\Container;
-use Keer\Container\Exception\ContainerException;
-use Keer\Foundation\Exception\FoundationException;
+use Keer\Container\IServiceProvider;
 use Keer\Foundation\Services\LogService;
 
 /**
@@ -22,40 +21,28 @@ use Keer\Foundation\Services\LogService;
  */
 class Pantheon extends Container
 {
-    /** @var Pantheon 单例模式存储对象 */
-    protected static $INSTANCE;
-
-    /** @var string 应用的根目录 */
+    /** @var string 系统根目录 */
     protected $rootpath;
+
+    /** @var string 应用目录 */
+    protected $appPath;
+
+    /** @var string 配置目录 */
+    protected $configPath;
+
+    /** @var string 存储目录 */
+    protected $storagePath;
 
     /**
      * Pantheon constructor.
-     * @param string $path
-     * @throws FoundationException
+     * @param string|null $path
      */
-    private function __construct(string $path)
+    private function __construct(string $path = null)
     {
-        if (!$path) {
-            throw new FoundationException('无效的应用程序根目录');
+        if ($path) {
+            $this->rootpath = $path;
         }
-        $this->rootpath = $path;
-
         $this->bootstrap();
-    }
-
-    /**
-     * 获取获取应用对象
-     * @param string|null $path 应用的根目录
-     * @return Pantheon
-     * @throws FoundationException
-     */
-    public static function instance(string $path = null)
-    {
-        if (!static::$INSTANCE) {
-            static::$INSTANCE = new Pantheon($path);
-        }
-
-        return static::$INSTANCE;
     }
 
     /**
@@ -64,11 +51,17 @@ class Pantheon extends Container
     protected function bootstrap()
     {
         foreach ($this->initialServices() as $service) {
-            try {
-                $this->set($service);
-            } catch (ContainerException $e) {
-            }
+            /** @var IServiceProvider $obj */
+            $obj = new $service();
+            $obj->provides();
         }
+    }
+
+    /**
+     * 设置系统所有相关目录
+     */
+    protected function setAllPath()
+    {
 
     }
 

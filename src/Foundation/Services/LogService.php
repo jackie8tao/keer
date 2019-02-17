@@ -25,26 +25,26 @@ class LogService extends GenericService
     /** @var MonoLogger 日志的服务组件对象 */
     protected $component;
 
-    public function __construct(Pantheon $container)
+    public function __construct()
     {
-        parent::__construct($container);
-
         $this->aliases = ['log', 'keer.log'];
         $this->component = new MonoLogger('keerlog');
     }
 
     /**
      * 服务组件对象
-     * @return mixed
+     * @return mixed|void
      * @throws \Exception
      */
     public function provides()
     {
-        $rootpath = $this->container->rootpath();
+        $rootpath = app()->rootpath();
         $this->component->pushHandler(
             new StreamHandler("{$rootpath}/storage/log/keer.log", MonoLogger::DEBUG)
         );
 
-        return $this->component;
+        foreach ($this->aliases as $val) {
+            app()->register($val, $this->component);
+        }
     }
 }

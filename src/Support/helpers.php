@@ -9,18 +9,13 @@
  */
 
 use Keer\Foundation\Pantheon;
-use Keer\Foundation\Exception\FoundationException;
 
 if (!function_exists('app')) {
     /**
      * 获取web应用对象
-     * @return bool|Pantheon
+     * @return Pantheon
      */
     function app() {
-        try {
-            return Pantheon::instance();
-        } catch (FoundationException $e) {
-            return false;
-        }
+        return Pantheon::getInstance();
     }
 }

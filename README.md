@@ -1,2 +1,15 @@
-# keer
-A simple and fast PHP web framework focusing on API development!
+### Keer Web开发框架
+Keer开发框架是一个简单，快速的PHP Web开发框架，致力与API系统开发。为了追求框架的简洁，
+Keer仅仅实现了基础容器、路由和MVC结构。
+
+#### 容器部分
+容器部分实现了对象的注册，依赖的自动解析和注入。使用形式如下：
+
+```PHP 
+
+```
+
+#### 路由部分
+
+
+#### 便捷功能

@@ -25,7 +25,7 @@ interface IServiceProvider
 
     /**
      * 服务组件对象
-     * @return mixed
+     * @return mixed|void
      */
     public function provides();
 }

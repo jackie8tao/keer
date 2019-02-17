@@ -12,8 +12,6 @@ namespace Keer\Container;
 
 use \ReflectionClass;
 use \ReflectionException;
-use Keer\Container\Exception\InvalidServiceException;
-use Keer\Container\Exception\ServiceExistException;
 use Keer\Container\Exception\ContainerException;
 use Keer\Container\Exception\DependencyNotFoundException;
 use Keer\Container\Exception\DependencyExistsException;
@@ -25,11 +23,34 @@ use Keer\Container\Exception\InvalidDependencyException;
  */
 class Container implements IContainer
 {
+    /** @var Container 全局容器 */
+    static protected $INSTANCE;
+
     /** @var array 向容器中注册的对象 */
     protected $dependencies = [];
 
-    /** @var array 容器中注册的服务组件 */
-    protected $services = [];
+    /**
+     * 获取全局容器对象
+     * @return static
+     */
+    static public function getInstance() : Container
+    {
+        if(!static::$INSTANCE) {
+            static::$INSTANCE = new static();
+        }
+
+        return static::$INSTANCE;
+    }
+
+    /**
+     * 设置全局容器对象
+     * @param Container $container
+     * @return static
+     */
+    static public function setInstance(Container $container = null)
+    {
+        return static::$INSTANCE = $container;
+    }
 
     /**
      * 向容器中注册对象
@@ -45,8 +66,8 @@ class Container implements IContainer
             throw new DependencyExistsException();
 
         $def = isset($class) ? $class : $alias;
-        if (!is_string($def) && !is_callable($def))
-            throw new InvalidDependencyException('依赖只能为类名或者闭包');
+        if (!is_string($def) && !is_callable($def) && !is_object($def))
+            throw new InvalidDependencyException('依赖只能为类名、闭包或对象！');
 
         $this->dependencies[$alias] = [
             "def" => $def,
@@ -68,6 +89,8 @@ class Container implements IContainer
 
         $def = $this->dependencies[$name]['def'];
         $args = $this->dependencies[$name]['args'];
+
+        // 类名
         if (is_string($def)) {
             try {
                 return $this->parseClass($def, $args);
@@ -76,57 +99,15 @@ class Container implements IContainer
             }
         }
 
+        // 闭包
         if (is_callable($def)) {
             return call_user_func_array($def, $args);
         }
 
+        // 对象
+        if (is_object($def)) return $def;
+
         throw new ContainerException("未找到{$name}");
-    }
-
-    /**
-     * 向容器中添加服务组件
-     * @param string $service
-     * @throws ServiceExistException
-     * @throws InvalidServiceException
-     */
-    public function set(string $service)
-    {
-        if (isset($this->services[$service])) {
-            throw new ServiceExistException('服务已经添加！');
-        }
-
-        if (!class_exists($service)) {
-            throw new InvalidServiceException('服务类不存在!');
-        }
-
-        /** @var IServiceProvider $serviceProvider */
-        $serviceProvider = new $service($this);
-        if (!($serviceProvider instanceof IServiceProvider)) {
-            throw new InvalidServiceException('服务类必须实现IServiceProvider接口');
-        }
-
-        $this->services[$service] = [
-            'aliases' => $serviceProvider->aliases(),
-            'object' => $serviceProvider->provides()
-        ];
-    }
-
-    /**
-     * 从容器中获取服务组件
-     * @param string $alias , 服务名称
-     * @return mixed
-     * @throws ContainerException
-     */
-    public function fetch(string $alias)
-    {
-        foreach ($this->services as $key => $value) {
-            $found = array_search($alias, $value['aliases']) || $key == $alias;
-            if ($found) {
-                return $this->services[$key]['object'];
-            }
-        }
-
-        throw new ContainerException("未找到服务组件:{$alias}");
     }
 
     /**
