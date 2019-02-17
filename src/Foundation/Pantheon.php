@@ -37,7 +37,7 @@ class Pantheon extends Container
      * Pantheon constructor.
      * @param string|null $path
      */
-    private function __construct(string $path = null)
+    public function __construct(string $path = null)
     {
         if ($path) {
             $this->rootpath = $path;
