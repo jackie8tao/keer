@@ -21,6 +21,9 @@ abstract class GenericService implements IServiceProvider
     /** @var array 服务名称 */
     protected $aliases = [];
 
+    /** @var static 服务对象 */
+    protected $component;
+
     /**
      * 服务组件的别称
      * @return array
@@ -34,4 +37,30 @@ abstract class GenericService implements IServiceProvider
 
         return $this->aliases;
     }
+
+    /**
+     * 注册组件对象到容器
+     */
+    protected function register()
+    {
+        foreach ($this->aliases() as $alias) {
+            app()->register($alias, $this->component);
+        }
+    }
+
+    /**
+     * 初始化服务组件
+     * @return mixed|void
+     */
+    public function initialize()
+    {
+        $this->setup();
+        $this->register();
+    }
+
+    /**
+     * 设置组件
+     * @return mixed
+     */
+    abstract protected function setup();
 }

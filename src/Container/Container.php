@@ -77,7 +77,7 @@ class Container implements IContainer
 
     /**
      * 从容器中解析出指定对象
-     * @param string $name , 对象名称
+     * @param string $name 对象名称
      * @return mixed
      * @throws DependencyNotFoundException
      * @throws ContainerException

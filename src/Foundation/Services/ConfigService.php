@@ -5,26 +5,25 @@
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  *
- * Date: 18-12-3, Time: 下午6:30
+ * Date: 19-2-17, Time: 下午10:53
  */
 
 namespace Keer\Foundation\Services;
 
 use Keer\Container\ServiceProvider\GenericService;
-use Monolog\Logger as MonoLogger;
-use Monolog\Handler\StreamHandler;
+use Noodlehaus\Config;
 
 /**
- * 日志记录组件
- * Class LogService
+ * 配置读取组件
+ * Class ConfigService
  * @package Keer\Foundation\Services
  */
-class LogService extends GenericService
+class ConfigService extends GenericService
 {
     public function __construct()
     {
-        $this->aliases = ['log'];
-        $this->component = new MonoLogger('keerlog');
+        $this->aliases = ['kconfig'];
+        $this->component = new Config(app()->configPath());
     }
 
     /**
@@ -33,9 +32,6 @@ class LogService extends GenericService
      */
     protected function setup()
     {
-        $storagePath = app()->storagePath();
-        $this->component->pushHandler(
-            new StreamHandler($storagePath . '/log/keerlog.log', MonoLogger::DEBUG)
-        );
+        return;
     }
 }

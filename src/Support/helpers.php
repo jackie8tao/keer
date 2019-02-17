@@ -15,7 +15,30 @@ if (!function_exists('app')) {
      * 获取web应用对象
      * @return Pantheon
      */
-    function app() {
+    function app()
+    {
         return Pantheon::getInstance();
+    }
+}
+
+if (!function_exists('klog')) {
+    /**
+     * 获取系统日志组件
+     * @return \Monolog\Logger
+     */
+    function klog()
+    {
+        return app()->take('klog');
+    }
+}
+
+if (!function_exists('kconfig')) {
+    /**
+     * 获取日志读取组件
+     * @return \Noodlehaus\Config
+     */
+    function kconfig()
+    {
+        return app()->take('kconfig');
     }
 }

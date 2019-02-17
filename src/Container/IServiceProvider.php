@@ -24,8 +24,8 @@ interface IServiceProvider
     public function aliases() : array;
 
     /**
-     * 服务组件对象
+     * 初始化服务对象
      * @return mixed|void
      */
-    public function provides();
+    public function initialize();
 }
