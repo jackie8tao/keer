@@ -16,6 +16,7 @@ use FastRoute\RouteCollector;
 use Keer\Container\Container;
 use Keer\Container\IServiceProvider;
 use Keer\Foundation\Services\ConfigService;
+use Keer\Foundation\Services\ErrorService;
 use Keer\Foundation\Services\LogService;
 use Keer\Foundation\Services\RouteService;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -175,6 +176,7 @@ class Pantheon extends Container
     {
         return [
             LogService::class, ConfigService::class, RouteService::class,
+            ErrorService::class
         ];
     }
 }
