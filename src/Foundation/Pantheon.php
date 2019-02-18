@@ -152,6 +152,7 @@ class Pantheon extends Container
                 require_once $dir . DIRECTORY_SEPARATOR . $file;
             }
         }
+        closedir($r);
     }
 
     /**
@@ -169,7 +170,7 @@ class Pantheon extends Container
         /** @var RouteCollector $routes */
         $routes = $this->take('kroutes');
         $dispatcher = new GroupCountBased($routes->getData());
-        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getBasePath());
+        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getRequestUri());
 
         $response = null;
         switch ($routeInfo[0]) {
