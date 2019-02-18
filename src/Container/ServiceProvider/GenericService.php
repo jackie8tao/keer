@@ -60,7 +60,7 @@ abstract class GenericService implements IServiceProvider
 
     /**
      * 设置组件
-     * @return mixed
+     * @return void
      */
     abstract protected function setup();
 }

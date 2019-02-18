@@ -29,7 +29,7 @@ class LogService extends GenericService
 
     /**
      * 设置组件
-     * @return mixed
+     * @return void
      */
     protected function setup()
     {

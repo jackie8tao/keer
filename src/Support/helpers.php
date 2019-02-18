@@ -42,3 +42,14 @@ if (!function_exists('kconfig')) {
         return app()->take('kconfig');
     }
 }
+
+if (!function_exists('kroutes')) {
+    /**
+     * 获取系统路由组件
+     * @return \FastRoute\RouteCollector
+     */
+    function kroutes()
+    {
+        return app()->take('kroutes');
+    }
+}

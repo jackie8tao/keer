@@ -5,33 +5,36 @@
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  *
- * Date: 19-2-17, Time: 下午10:53
+ * Date: 19-2-17, Time: 下午11:42
  */
 
 namespace Keer\Foundation\Services;
 
+use FastRoute\DataGenerator\GroupCountBased;
+use FastRoute\RouteCollector;
+use FastRoute\RouteParser\Std as StdParser;
 use Keer\Container\ServiceProvider\GenericService;
-use Noodlehaus\Config;
 
 /**
- * 配置读取组件
- * Class ConfigService
+ * 路由组件
+ * Class RouteService
  * @package Keer\Foundation\Services
  */
-class ConfigService extends GenericService
+class RouteService extends GenericService
 {
     public function __construct()
     {
-        $this->aliases = ['kconfig'];
-        $this->component = new Config(app()->configPath());
+        $this->aliases = ['kroutes'];
     }
 
     /**
      * 设置组件
-     * @return void
+     * @return mixed|void
      */
     protected function setup()
     {
-        // 什么也不做
+        $this->component = new RouteCollector(
+            new StdParser(), new GroupCountBased()
+        );
     }
 }

@@ -10,10 +10,17 @@
 
 namespace Keer\Foundation;
 
+use FastRoute\Dispatcher;
+use FastRoute\Dispatcher\GroupCountBased;
+use FastRoute\RouteCollector;
 use Keer\Container\Container;
 use Keer\Container\IServiceProvider;
 use Keer\Foundation\Services\ConfigService;
 use Keer\Foundation\Services\LogService;
+use Keer\Foundation\Services\RouteService;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
  * 万物自此开始，由此而终结！
@@ -108,13 +115,66 @@ class Pantheon extends Container
     }
 
     /**
+     * 处理web请求
+     * @param HttpRequest $request
+     * @param HttpResponse $response
+     */
+    public function handle(HttpRequest $request, HttpResponse $response = null)
+    {
+        /** @var RouteCollector $routes */
+        $routes = $this->take('kroutes');
+        $dispatcher = new GroupCountBased($routes->getData());
+        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getBasePath());
+
+        switch ($routeInfo[0]) {
+            case Dispatcher::NOT_FOUND:
+                if ($str = $this->get_require_contents(__DIR__ . '/404.php')) {
+                    $response = new HttpResponse($str, 404, ['content-type' => 'text/html']);
+                }
+                break;
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                if ($str = $this->get_require_contents(__DIR__ . '/405.php')) {
+                    $response = new HttpResponse($str, 405,  ['content-type' => 'text/html']);
+                }
+                break;
+            case Dispatcher::FOUND:
+                $request->attributes = new ParameterBag($routeInfo[2]);
+                $handlers = explode('@', $routeInfo[1]);
+                $controller = new $handlers[0]();
+                $method = $handlers[1];
+                $controller->{$method}($request, $response);
+                break;
+        }
+
+        echo $response;
+    }
+
+    /**
+     * 获取require引入文件的内容
+     * @param string $filename
+     * @return string|false
+     */
+    protected function get_require_contents(string $filename)
+    {
+        if (is_file($filename)) {
+            ob_start();
+            require_once $filename;
+            $content = ob_get_contents();
+            ob_end_clean();
+            return $content;
+        }
+
+        return false;
+    }
+
+    /**
      * 需要初始化的服务组件列表
      * @return array
      */
     protected function initialServices(): array
     {
         return [
-            LogService::class, ConfigService::class
+            LogService::class, ConfigService::class, RouteService::class,
         ];
     }
 }
