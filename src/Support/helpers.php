@@ -10,46 +10,59 @@
 
 use Keer\Foundation\Pantheon;
 
-if (!function_exists('app')) {
+if (!function_exists('kApp')) {
     /**
      * 获取web应用对象
      * @return Pantheon
      */
-    function app()
+    function kApp()
     {
         return Pantheon::getInstance();
     }
 }
 
-if (!function_exists('klog')) {
+if (!function_exists('kLog')) {
     /**
      * 获取系统日志组件
      * @return \Monolog\Logger
      */
-    function klog()
+    function kLog()
     {
-        return app()->take('klog');
+        return kApp()->take('klog');
     }
 }
 
-if (!function_exists('kconfig')) {
+if (!function_exists('kConfig')) {
     /**
      * 获取日志读取组件
      * @return \Noodlehaus\Config
      */
-    function kconfig()
+    function kConfig()
     {
-        return app()->take('kconfig');
+        return kApp()->take('kconfig');
     }
 }
 
-if (!function_exists('kroutes')) {
+if (!function_exists('kRoutes')) {
     /**
      * 获取系统路由组件
      * @return \FastRoute\RouteCollector
      */
-    function kroutes()
+    function kRoutes()
     {
-        return app()->take('kroutes');
+        return kApp()->take('kroutes');
+    }
+}
+
+if (!function_exists('kDb'))
+{
+
+    /**
+     * 获取系统Dbal组件
+     * @return \Doctrine\DBAL\Connection
+     */
+    function kDb()
+    {
+        return kApp()->take('kdb');
     }
 }

@@ -44,7 +44,7 @@ abstract class GenericService implements IServiceProvider
     protected function register()
     {
         foreach ($this->aliases() as $alias) {
-            app()->register($alias, $this->component);
+            kApp()->register($alias, $this->component);
         }
     }
 

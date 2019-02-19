@@ -17,6 +17,7 @@ use Keer\Container\Container;
 use Keer\Container\IServiceProvider;
 use Keer\Foundation\Exception\FoundationException;
 use Keer\Foundation\Services\ConfigService;
+use Keer\Foundation\Services\DbService;
 use Keer\Foundation\Services\ErrorService;
 use Keer\Foundation\Services\LogService;
 use Keer\Foundation\Services\RouteService;
@@ -175,12 +176,12 @@ class Pantheon extends Container
         $response = null;
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                if ($str = $this->get_require_contents(__DIR__ . '/404.php')) {
+                if ($str = $this->get_require_contents(__DIR__ . '/Views/404.php')) {
                     $response = new HttpResponse($str, 404, ['content-type' => 'text/html']);
                 }
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                if ($str = $this->get_require_contents(__DIR__ . '/405.php')) {
+                if ($str = $this->get_require_contents(__DIR__ . '/Views/405.php')) {
                     $response = new HttpResponse($str, 405,  ['content-type' => 'text/html']);
                 }
                 break;
@@ -227,7 +228,7 @@ class Pantheon extends Container
     {
         $cores = [
             LogService::class, ConfigService::class, RouteService::class,
-            ErrorService::class
+            ErrorService::class, DbService::class
         ];
 
         foreach ($cores as $service) {
@@ -242,7 +243,7 @@ class Pantheon extends Container
      */
     protected function loadCustomServices()
     {
-        $services = kconfig()->get('app.services');
+        $services = kConfig()->get('app.services');
 
         foreach ($services as $service) {
             if (!class_exists($service)) continue;
@@ -259,10 +260,10 @@ class Pantheon extends Container
      */
     protected function throughMiddlewares(Request $request)
     {
-        $middlewares = kconfig()->get('app.middlewares');
+        $middlewares = kConfig()->get('app.middlewares');
 
         foreach ($middlewares as $middleware) {
-            if (!class_exists($middlewares)) continue;
+            if (!class_exists($middleware)) continue;
             /** @var IMiddleware $obj */
             $obj = new $middleware($request);
             if (!$obj->execute()) {

@@ -10,8 +10,8 @@
 
 namespace Keer\Foundation\Services;
 
-use Keer\Container\ServiceProvider\GenericService;
 use Noodlehaus\Config;
+use Keer\Container\ServiceProvider\GenericService;
 
 /**
  * 配置读取组件
@@ -23,7 +23,6 @@ class ConfigService extends GenericService
     public function __construct()
     {
         $this->aliases = ['kconfig'];
-        $this->component = new Config(app()->configPath());
     }
 
     /**
@@ -32,6 +31,6 @@ class ConfigService extends GenericService
      */
     protected function setup()
     {
-        // 什么也不做
+        $this->component = new Config(kApp()->configPath());
     }
 }

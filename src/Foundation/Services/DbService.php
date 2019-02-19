@@ -5,26 +5,24 @@
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  *
- * Date: 18-12-3, Time: 下午6:30
+ * Date: 19-2-20, Time: 上午3:00
  */
 
 namespace Keer\Foundation\Services;
 
+use Doctrine\DBAL\DriverManager;
 use Keer\Container\ServiceProvider\GenericService;
-use Monolog\Logger as MonoLogger;
-use Monolog\Handler\StreamHandler;
 
 /**
- * 日志记录组件
- * Class LogService
+ * 数据库服务组件
+ * Class DbService
  * @package Keer\Foundation\Services
  */
-class LogService extends GenericService
+class DbService extends GenericService
 {
     public function __construct()
     {
-        $this->aliases = ['log'];
-        $this->component = new MonoLogger('keerlog');
+        $this->aliases = ['kdb'];
     }
 
     /**
@@ -33,9 +31,9 @@ class LogService extends GenericService
      */
     protected function setup()
     {
-        $storagePath = kApp()->storagePath();
-        $this->component->pushHandler(
-            new StreamHandler($storagePath . '/log/keerlog.log', MonoLogger::DEBUG)
-        );
+        $platform = kConfig()->get('db.default');
+        $connections = kConfig()->get('db.connections');
+
+        $this->component = DriverManager::getConnection($connections[$platform]);
     }
 }
