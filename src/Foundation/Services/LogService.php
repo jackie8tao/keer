@@ -23,7 +23,7 @@ class LogService extends GenericService
 {
     public function __construct()
     {
-        $this->aliases = ['log'];
+        $this->aliases = ['klog'];
         $this->component = new MonoLogger('keerlog');
     }
 
